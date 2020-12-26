@@ -3,18 +3,21 @@ require_relative '../graphics/player.rb'
 
 class Logic
   class Player
-    attr_accessor :state, :position, :flip, :player
+    attr_accessor :state, :position, :flip, :player, :direction, :current_state
 
     def initialize
       @player = Graphics::Player.new
       @state = :idle
+      @current_state = @state
       @flip = nil
       @position = { x: 0, y: 0 }
+      @direction = 'right'
     end
 
     def move(key)
       @position[:x] = action_pressed?(key, 'right') - action_pressed?(key, 'left') if @position[:x].zero?
       @position[:y] = action_pressed?(key, 'down') - action_pressed?(key, 'up') if @position[:y].zero?
+
       @flip = :horizontal if @position[:x] < 0
       @flip = nil if @position[:x] > 0
       @state = :move if @position[:x] != 0 || @position[:y] != 0
@@ -25,8 +28,11 @@ class Logic
     end
 
     def idle_state
-      @current_state = @state
-      @player.play(animation: :idle, flip: @flip)
+      if  @current_state != @state
+        puts "idle_#{@direction}".to_sym
+        @player.play(animation: "idle_#{@direction}".to_sym, loop: true)
+        @current_state = @state
+      end
     end
 
     def move_state
@@ -34,11 +40,22 @@ class Logic
       @player.x += @position[:x]
       @player.y += @position[:y]
       if @position[:y] == 0
-        @player.play(animation: :move_left, loop: true, flip: @flip) if @position[:x] > 0
-        @player.play(animation: :move_right, loop: true) if @position[:x] < 0
+        if @position[:x] < 0
+          @player.play(animation: :move_left, loop: true)
+          @direction = 'left'
+        elsif @position[:x] > 0
+          @player.play(animation: :move_right, loop: true)
+          @direction = 'right'
+        end
       end
-      @player.play(animation: :move_up, loop: true) if @position[:y] < 0
-      @player.play(animation: :move_down, loop: true) if @position[:y] > 0
+      if @position[:y] < 0
+        @player.play(animation: :move_up, loop: true)
+        @direction = 'up'
+      elsif @position[:y] > 0
+        @player.play(animation: :move_down, loop: true)
+        @direction = 'down'
+      end
+      @current_state = :move
     end
 
     def roll_state

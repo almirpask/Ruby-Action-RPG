@@ -13,24 +13,25 @@ class Graphics
         **dimensions,
         z: 1,
         animations: {
-          idle: [
+          idle_right: [
             { x: 0, y: 0, **dimensions, time: 100 }
           ],
-          move_left: [
+          idle_up: [
+            { x: 384, y: 0, **dimensions, time: 100 }
+          ],
+          idle_left: [
+            { x: 768, y: 0, **dimensions, time: 100 }
+          ],
+          idle_down: [
+            { x: 1152, y: 0, **dimensions, time: 100 }
+          ],
+          move_right: [
             { x: 64, y: 0, **dimensions, time: 100 },
             { x: 128, y: 0, **dimensions, time: 100 },
             { x: 192, y: 0, **dimensions, time: 100 },
             { x: 256, y: 0, **dimensions, time: 100 },
             { x: 320, y: 0, **dimensions, time: 100 },
             { x: 0, y: 0, **dimensions, time: 100 }
-          ],
-          move_right: [
-            { x: 832, y: 0, **dimensions, time: 100 },
-            { x: 986, y: 0, **dimensions, time: 100 },
-            { x: 960, y: 0, **dimensions, time: 100 },
-            { x: 1024, y: 0, **dimensions, time: 100 },
-            { x: 1088, y: 0, **dimensions, time: 100 },
-            { x: 768, y: 0, **dimensions, time: 100 }
           ],
           move_up: [
             { x: 448, y: 0, **dimensions, time: 100 },
@@ -39,6 +40,14 @@ class Graphics
             { x: 640, y: 0, **dimensions, time: 100 },
             { x: 704, y: 0, **dimensions, time: 100 },
             { x: 384, y: 0, **dimensions, time: 100 }
+          ],
+          move_left: [
+            { x: 832, y: 0, **dimensions, time: 100 },
+            { x: 896, y: 0, **dimensions, time: 100 },
+            { x: 960, y: 0, **dimensions, time: 100 },
+            { x: 1024, y: 0, **dimensions, time: 100 },
+            { x: 1088, y: 0, **dimensions, time: 100 },
+            { x: 768, y: 0, **dimensions, time: 100 }
           ],
           move_down: [
             { x: 1216, y: 0, **dimensions, time: 100 },
