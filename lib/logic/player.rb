@@ -3,7 +3,7 @@ require_relative '../graphics/player.rb'
 
 class Logic
   class Player
-    attr_accessor :state, :position, :flip, :player, :direction, :current_state
+    attr_accessor :state, :position, :flip, :player, :direction, :current_state, :last_position, :is_colliding
 
     def initialize
       @player = Graphics::Player.new
@@ -11,7 +11,9 @@ class Logic
       @current_state = @state
       @flip = nil
       @position = { x: 0, y: 0 }
+      @last_position = @position
       @direction = 'right'
+      @is_colliding = false
     end
 
     def move(key)
@@ -28,18 +30,16 @@ class Logic
     end
 
     def idle_state
-      if  @current_state != @state
-        puts "idle_#{@direction}".to_sym
-        @player.play(animation: "idle_#{@direction}".to_sym, loop: true)
-        @current_state = @state
-      end
+      return unless @current_state != @state
+
+      @player.play(animation: "idle_#{@direction}".to_sym, loop: true)
+      @current_state = @state
     end
 
     def move_state
       @position = normalize(@position)
-      @player.x += @position[:x]
-      @player.y += @position[:y]
-      if @position[:y] == 0
+
+      if @position[:y].zero?
         if @position[:x] < 0
           @player.play(animation: :move_left, loop: true)
           @direction = 'left'
@@ -48,12 +48,30 @@ class Logic
           @direction = 'right'
         end
       end
+
       if @position[:y] < 0
         @player.play(animation: :move_up, loop: true)
         @direction = 'up'
       elsif @position[:y] > 0
         @player.play(animation: :move_down, loop: true)
         @direction = 'down'
+      end
+
+      if is_colliding
+        push = 3
+        case @direction
+        when 'up'
+          @player.y += push
+        when 'down'
+          @player.y -= push
+        when 'left'
+          @player.x += push
+        when 'right'
+          @player.x -= push
+        end
+      else
+        @player.x += @position[:x]
+        @player.y += @position[:y]
       end
       @current_state = :move
     end
@@ -78,35 +96,31 @@ class Logic
         vector
       end
     end
-  end
-end
 
-@player = Logic::Player.new
+    def reset_position(key)
+      if %w[left right].include?(key)
+        position[:x] = 0
+      elsif %w[up down].include?(key)
+        position[:y] = 0
+      end
+      self.state = :idle if position[:x].zero? && position[:y].zero?
+    end
 
-on :key_up do |event|
-  key = event.key
-  if %w[left right].include?(key)
-    @player.position[:x] = 0
-  elsif %w[up down].include?(key)
-    @player.position[:y] = 0
-  end
-  @player.state = :idle if @player.position[:x].zero? && @player.position[:y].zero?
-end
+    def state_machine
+      case state
+      when :idle
+        idle_state
+      when :move
+        move_state
+      when :roll
+        roll_state
+      when :attack
+        atack_state
+      end
+    end
 
-on :key do |event|
-  key = event.key
-  @player.move key
-end
-
-update do
-  case @player.state
-  when :idle
-    @player.idle_state
-  when :move
-    @player.move_state
-  when :roll
-    @player.roll_state
-  when :attack
-    @player.atack_state
+    def sprite
+      @player
+    end
   end
 end
