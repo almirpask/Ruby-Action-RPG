@@ -2,6 +2,7 @@ require 'ruby2d'
 
 class Graphics
   class Player < Sprite
+    attr_reader :collision
     def initialize
       dimensions = {
         width: 64,
@@ -11,7 +12,9 @@ class Graphics
         'assets/images/Player.png',
         clip_width: dimensions[:width],
         **dimensions,
-        z: 1,
+        x: 0,
+        y: 0,
+        z: 20,
         animations: {
           idle_right: [
             { x: 0, y: 0, **dimensions, time: 100 }
@@ -59,6 +62,36 @@ class Graphics
           ]
         }
       )
+      set_colision
+    end
+
+    def x=(number)
+      super
+      @x = number
+      move_collision
+    end
+
+    def y=(number)
+      super
+      @y = number
+      move_collision
+    end
+
+    private
+
+    def set_colision
+      @collision = Rectangle.new(
+        x: x + 26, y: y + 40,
+        width: 10, height: 5,
+        color: 'teal',
+        opacity: 0.5,
+        z: 20
+      )
+    end
+
+    def move_collision
+      @collision.x = x + 26
+      @collision.y = y + 40
     end
   end
 end
