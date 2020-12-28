@@ -2,7 +2,7 @@ require 'ruby2d'
 
 class Graphics
   class Tree < Sprite
-    attr_accessor :collision, :ysort
+    attr_accessor :collision, :ysort, :destructible
     def initialize(x:, y:)
       super(
         'assets/images/Tree.png',
@@ -12,6 +12,8 @@ class Graphics
         width: 32,
         height: 48
       )
+
+      @destructible = false
 
       @ysort = Rectangle.new(
         x: x, y: y,
