@@ -2,6 +2,7 @@ require 'ruby2d'
 
 class Graphics::Grass < Sprite
   attr_accessor :collision, :destructible
+  attr_writer :position
   def initialize(x:, y:)
     dimensions = {
       width: 32,
@@ -24,11 +25,22 @@ class Graphics::Grass < Sprite
       opacity: 0.5,
       z: 20
     )
-
+    @position = { **dimensions, x: x, y: y, clip_width: dimensions[:width] }
     @destructible = true
   end
 
   def destroy
-    self.remove
+    remove
+    collision.remove
+    grass_effect = Sprite.new(
+      'assets/images/GrassEffect.png',
+      z: 5,
+      **@position,
+      time: 100,
+      opacity: opacity
+    )
+    grass_effect.play do
+      grass_effect.opacity = 0
+    end
   end
 end

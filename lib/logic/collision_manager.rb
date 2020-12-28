@@ -8,7 +8,8 @@ class Logic::CollisionManager
   end
 
   def collision?(player)
-    check_overlap @collisions, player
+    objects = destructibles.map(&:collision)
+    check_overlap [*@collisions, *objects], player
   end
 
   def ysort?(player)
@@ -20,8 +21,8 @@ class Logic::CollisionManager
   end
 
   def add_object(object)
-    @collisions << object.collision if object.respond_to? :collision
-    @destructibles << object if object.respond_to?(:collision) && object.destructible
+    @collisions << object.collision if object.respond_to?(:collision) && !object.destructible
+    @destructibles << object if object.destructible
     @ysorts << object.ysort if object.respond_to? :ysort
   end
 
@@ -34,12 +35,19 @@ class Logic::CollisionManager
   end
 
   def check_overlap_and_destroy(objects, hit_box)
-    objects.each do |object|
+    @destructibles.each do |object|
+      puts "object_id = #{object.object_id}"
+    end
+    puts '-------'
+    @collisions.each do |object|
+      puts "object_id = #{object.object_id}"
+    end
+    objects.each_with_index do |object, index|
       has_overlap = horizontal_overlap(hit_box, object.collision) && vertical_overlap(hit_box, object.collision)
-      if has_overlap
-        object.destroy
-        object.collision.remove
-      end
+      next unless has_overlap
+
+      object.destroy
+      @destructibles = @destructibles.pop index
     end
   end
 
