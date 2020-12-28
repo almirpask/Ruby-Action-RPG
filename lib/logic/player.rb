@@ -4,30 +4,62 @@ require_relative '../graphics/player.rb'
 class Logic
   class Player
     attr_accessor :state, :position, :flip, :player, :direction, :current_state, :last_position, :is_colliding
-
     def initialize
       @player = Graphics::Player.new
-      @state = :idle
+      @state = :move
       @current_state = @state
       @flip = nil
       @position = { x: 0, y: 0 }
       @last_position = @position
-      @direction = 'right'
+      @direction = 'down'
+      @player.direction = @direction
+      @player.play(animation: "idle_#{@direction}".to_sym, loop: true)
       @is_colliding = false
     end
 
     def move(key)
-      @position[:x] = action_pressed?(key, 'right') - action_pressed?(key, 'left') if @position[:x].zero?
-      @position[:y] = action_pressed?(key, 'down') - action_pressed?(key, 'up') if @position[:y].zero?
+      if %i[idle move].include? @state
+        @current_state = :move
+        @position[:x] = action_pressed?(key, 'right') - action_pressed?(key, 'left') if @position[:x].zero?
+        @position[:y] = action_pressed?(key, 'down') - action_pressed?(key, 'up') if @position[:y].zero?
 
-      @flip = :horizontal if @position[:x] < 0
-      @flip = nil if @position[:x] > 0
-      @state = :move if @position[:x] != 0 || @position[:y] != 0
+        @flip = :horizontal if @position[:x] < 0
+        @flip = nil if @position[:x] > 0
+        @state = :move if @position[:x] != 0 || @position[:y] != 0
+      end
     end
 
-    def action_pressed?(key, action)
-      key == action ? 1 : 0
+    def atack(key)
+      @state = :atack if key == 'z'
+      @current_state = :atack if key == 'z'
     end
+
+    def reset_position(key)
+      if %w[left right].include?(key)
+        position[:x] = 0
+      elsif %w[up down].include?(key)
+        position[:y] = 0
+      end
+    end
+
+    def sprite
+      @player
+    end
+
+    def state_machine
+      case state
+      when :idle
+        idle_state
+      when :move
+        move_state
+      when :roll
+        roll_state
+      when :atack
+        atack_state
+      end
+    end
+
+    private
 
     def idle_state
       return unless @current_state != @state
@@ -39,6 +71,57 @@ class Logic
     def move_state
       @position = normalize(@position)
 
+      set_direction
+      set_hitbox_direction
+      if is_colliding
+        push = 3
+        case @direction
+        when 'up'
+          @player.y += push
+        when 'down'
+          @player.y -= push
+        when 'left'
+          @player.x += push
+        when 'right'
+          @player.x -= push
+        end
+      else
+        @player.x += @position[:x]
+        @player.y += @position[:y]
+      end
+      @state = :idle
+      @current_state = :move
+    end
+
+    def roll_state
+      @current_state = @state
+    end
+
+    def atack_state
+      @current_state = @state
+      @player.play(animation: "atack_#{direction}".to_sym) do
+        @state = :idle
+      end
+    end
+
+    def action_pressed?(key, action)
+      key == action ? 1 : 0
+    end
+
+    def normalize(vector)
+      new_vector = vector
+      l = vector[:x] * vector[:x] + vector[:y] * vector[:y]
+      if l != 0
+        l = Math.sqrt(l)
+        new_vector[:x] /= l
+        new_vector[:y] /= l
+        new_vector
+      else
+        vector
+      end
+    end
+
+    def set_direction
       if @position[:y].zero?
         if @position[:x] < 0
           @player.play(animation: :move_left, loop: true)
@@ -56,71 +139,14 @@ class Logic
         @player.play(animation: :move_down, loop: true)
         @direction = 'down'
       end
-
-      if is_colliding
-        push = 3
-        case @direction
-        when 'up'
-          @player.y += push
-        when 'down'
-          @player.y -= push
-        when 'left'
-          @player.x += push
-        when 'right'
-          @player.x -= push
-        end
-      else
-        @player.x += @position[:x]
-        @player.y += @position[:y]
-      end
-      @current_state = :move
+      @player.direction = @direction
     end
 
-    def roll_state
-      @current_state = @state
-    end
-
-    def atack_state
-      @current_state = @state
-    end
-
-    def normalize(vector)
-      new_vector = vector
-      l = vector[:x] * vector[:x] + vector[:y] * vector[:y]
-      if l != 0
-        l = Math.sqrt(l)
-        new_vector[:x] /= l
-        new_vector[:y] /= l
-        new_vector
-      else
-        vector
-      end
-    end
-
-    def reset_position(key)
-      if %w[left right].include?(key)
-        position[:x] = 0
-      elsif %w[up down].include?(key)
-        position[:y] = 0
-      end
-      self.state = :idle if position[:x].zero? && position[:y].zero?
-    end
-
-    def state_machine
-      case state
-      when :idle
-        idle_state
-      when :move
-        move_state
-      when :roll
-        roll_state
-      when :attack
-        atack_state
-      end
-    end
-
-    def sprite
-      @player
+    def set_hitbox_direction
+      # case @direction
+      # when 'right'
+      #   self.sprite.hit_box = {HIT_BOX_POSITIONS}
+      # end
     end
   end
 end
