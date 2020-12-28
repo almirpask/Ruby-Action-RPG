@@ -34,14 +34,7 @@ class Logic::CollisionManager
     end
   end
 
-  def check_overlap_and_destroy(objects, hit_box)
-    @destructibles.each do |object|
-      puts "object_id = #{object.object_id}"
-    end
-    puts '-------'
-    @collisions.each do |object|
-      puts "object_id = #{object.object_id}"
-    end
+  def check_overlap_and_destroy(objects, hit_box)    
     objects.each_with_index do |object, index|
       has_overlap = horizontal_overlap(hit_box, object.collision) && vertical_overlap(hit_box, object.collision)
       next unless has_overlap
