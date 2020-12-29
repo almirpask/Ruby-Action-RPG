@@ -3,7 +3,8 @@ require 'ruby2d'
 class Graphics
   class Enemy < Sprite
     attr_accessor :hit_box, :direction, :shadow, :player_zone_detection, :collision
-    def initialize
+    attr_reader :collision_opacity
+    def initialize(collision_opacity: 0)
       dimensions = {
         width: 16,
         height: 24
@@ -19,6 +20,7 @@ class Graphics
         loop: true
       )
 
+      @collision_opacity, = collision_opacity
       @shadow = Sprite.new(
         'assets/images/SmallShadow.png',
         width: 10,
@@ -49,7 +51,7 @@ class Graphics
         x: x + -22, y: y + -8,
         width: 60, height: 60,
         color: 'green',
-        opacity: 0.5,
+        opacity: @collision_opacity,
         z: 20
       )
 
@@ -57,7 +59,7 @@ class Graphics
         x: x + 4, y: y + 19,
         width: 10, height: 6,
         color: 'teal',
-        opacity: 0.5,
+        opacity: @collision_opacity,
         z: 20
       )
 
@@ -65,7 +67,7 @@ class Graphics
         x: x + 4, y: y + 19,
         width: 10, height: 6,
         color: 'teal',
-        opacity: 0.5,
+        opacity: @collision_opacity,
         z: 20
       )
     end

@@ -4,8 +4,8 @@ require_relative '../graphics/player.rb'
 class Logic
   class Player
     attr_accessor :state, :position, :flip, :player, :direction, :current_state, :last_position, :is_colliding
-    def initialize
-      @player = Graphics::Player.new
+    def initialize(collision_opacity: 0)
+      @player = Graphics::Player.new(collision_opacity: collision_opacity)
       @state = :move
       @current_state = @state
       @flip = nil

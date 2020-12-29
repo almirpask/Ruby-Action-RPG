@@ -7,16 +7,25 @@ require_relative 'lib/logic/enemy'
 require_relative 'lib/logic/collision_manager'
 
 set title: 'Action RPG', fullscreen: false, resizable: false, width: 1280, height: 720, viewport_width: 320, viewport_height: 180, background: 'white'
+SHOW_COLLISIONS = 1 # 1 TRUE, 0 FALSE
+collision_opacity = 0
+
+case SHOW_COLLISIONS
+when 0
+  collision_opacity = 0
+when 1
+  collision_opacity = 0.5
+end
 
 collision_manager = Logic::CollisionManager.new
-collision_manager.add_object Graphics::Tree.new(x: 55, y: 21)
-collision_manager.add_object Graphics::Tree.new(x: 110, y: 50)
-collision_manager.add_object Graphics::Tree.new(x: 210, y: 50)
-collision_manager.add_object Graphics::Tree.new(x: 150, y: 90)
-collision_manager.add_object Graphics::Grass.new(x: 0, y: 0)
-collision_manager.add_enemy Logic::Enemy.new
+collision_manager.add_object Graphics::Tree.new(x: 55, y: 21, collision_opacity: collision_opacity)
+collision_manager.add_object Graphics::Tree.new(x: 110, y: 50, collision_opacity: collision_opacity)
+collision_manager.add_object Graphics::Tree.new(x: 210, y: 50, collision_opacity: collision_opacity)
+collision_manager.add_object Graphics::Tree.new(x: 150, y: 90, collision_opacity: collision_opacity)
+collision_manager.add_object Graphics::Grass.new(x: 0, y: 0, collision_opacity: collision_opacity)
+collision_manager.add_enemy Logic::Enemy.new(collision_opacity: collision_opacity)
 Graphics::Background.new(get(:window))
-@player = Logic::Player.new
+@player = Logic::Player.new(collision_opacity: collision_opacity)
 
 on :key_up do |event|
   key = event.key

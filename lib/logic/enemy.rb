@@ -5,12 +5,12 @@ class Logic
   class Enemy
     attr_accessor :sprite
     VELOCITY = 0.5
-    def initialize
-      @sprite = Graphics::Enemy.new
+    def initialize(collision_opacity: 0)
+      @sprite = Graphics::Enemy.new(collision_opacity: collision_opacity)
       @sprite.play
     end
 
-    def move_to_player_position(player)     
+    def move_to_player_position(player)
       chase_target player.collision
     end
 

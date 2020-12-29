@@ -2,7 +2,7 @@ require 'ruby2d'
 
 class Graphics
   class Player < Sprite
-    attr_reader :collision
+    attr_reader :collision, :collision_opacity
     attr_accessor :hit_box, :direction
     HIT_BOX_POSITIONS = {
       right: {
@@ -23,7 +23,7 @@ class Graphics
       }
     }.freeze
 
-    def initialize
+    def initialize(collision_opacity: 0)
       dimensions = {
         width: 64,
         height: 64
@@ -134,6 +134,7 @@ class Graphics
           ]
         }
       )
+      @collision_opacity, = collision_opacity
       @direction = 'right'
       set_colision
     end
@@ -153,11 +154,12 @@ class Graphics
     private
 
     def set_colision
+      puts "ENV DEV #{ENV['DEV']}"
       @collision = Rectangle.new(
         x: x + 26, y: y + 40,
         width: 10, height: 5,
         color: 'teal',
-        opacity: 0.5,
+        opacity: @collision_opacity,
         z: 20
       )
 
@@ -165,7 +167,7 @@ class Graphics
         x: x + 38, y: y + 24,
         width: 10, height: 20,
         color: 'red',
-        opacity: 0.5,
+        opacity: @collision_opacity,
         z: 20
       )
     end
