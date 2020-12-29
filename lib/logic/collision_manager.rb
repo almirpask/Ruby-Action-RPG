@@ -22,8 +22,7 @@ class Logic::CollisionManager
   end
 
   def player_detection_zone?(player)
-    detection_zones = @enemies.map { |enemy| enemy.sprite.player_zone_detection }
-    puts check_overlap detection_zones, player
+    check_for_detections @enemies, player
   end
 
   def add_object(object)
@@ -37,6 +36,17 @@ class Logic::CollisionManager
   end
 
   private
+
+  def check_for_detections(enemies, player)
+    enemies.each do |enemy|
+      player_collision = player.sprite.collision
+      enemy_collision = enemy.sprite.player_zone_detection
+      has_overlap = horizontal_overlap(player_collision, enemy_collision) && vertical_overlap(player_collision, enemy_collision)
+      next unless has_overlap
+
+      enemy.move_to_player_position player.sprite
+    end
+  end
 
   def check_overlap(objects, player)
     Array(objects).any? do |object|

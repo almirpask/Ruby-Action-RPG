@@ -40,7 +40,7 @@ update do
   collision_manager.destructible? @player
   @player.is_colliding = collision
   ysort = collision_manager.ysort? @player.sprite.collision
-  collision_manager.player_detection_zone? @player.sprite.collision
+  collision_manager.player_detection_zone? @player
   @player.sprite.z = if ysort
                        4
                      else

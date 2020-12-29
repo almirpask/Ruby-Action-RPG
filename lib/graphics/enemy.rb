@@ -2,8 +2,7 @@ require 'ruby2d'
 
 class Graphics
   class Enemy < Sprite
-    attr_reader :collision
-    attr_accessor :hit_box, :direction, :shadow, :player_zone_detection
+    attr_accessor :hit_box, :direction, :shadow, :player_zone_detection, :collision
     def initialize
       dimensions = {
         width: 16,
@@ -72,10 +71,14 @@ class Graphics
     end
 
     def move_collision
-      @collision.x = x + 26
-      @collision.y = y + 40
+      @collision.x = x + 4
+      @collision.y = y + 19
 
-      set_hit_box_direction @direction.to_sym
+      @player_zone_detection.x = x - 22
+      @player_zone_detection.y = y - 8
+
+      @hit_box.x = x + 4
+      @hit_box.y = y + 19
     end
   end
 end
