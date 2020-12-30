@@ -2,43 +2,31 @@ require 'ruby2d'
 
 class Graphics
   class Enemy < Sprite
-    attr_accessor :hit_box, :direction, :shadow, :player_zone_detection, :collision, :hurt_box
+    attr_accessor :hit_box, :player_zone_detection, :collision, :hurt_box, :shadow
     attr_reader :collision_opacity
 
-    def initialize(collision_opacity: 0)
+    def initialize(collision_opacity: 0, x:, y:)
       dimensions = {
         width: 16,
         height: 24
       }
-
+      z = 40
       super(
         'assets/images/Bat.png',
         clip_width: dimensions[:width],
         **dimensions,
-        x: 100,
-        y: 100,
-        z: 40,
+        x: x,
+        y: y,
+        z: z,
         time: 110,
         loop: true
       )
 
-      z = 40
+      
 
       @collision_opacity = collision_opacity
 
-      @shadow = Sprite.new(
-        'assets/images/SmallShadow.png',
-        width: 10,
-        height: 8,
-        x: x + 4,
-        y: y + 18,
-        z: z,
-        opacity: 1
-      )
-
       set_collision
-
-      @direction = 'right'
     end
 
     def x=(number)
@@ -95,6 +83,16 @@ class Graphics
         color: 'teal',
         opacity: @collision_opacity,
         z: z
+      )
+
+      @shadow = Sprite.new(
+        'assets/images/SmallShadow.png',
+        width: 10,
+        height: 8,
+        x: x + 4,
+        y: y + 18,
+        z: z,
+        opacity: opacity
       )
     end
 

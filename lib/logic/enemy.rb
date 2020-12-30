@@ -6,8 +6,8 @@ class Logic
     attr_accessor :sprite
     attr_reader :health_points, :max_health_points
     VELOCITY = 0.5
-    def initialize(collision_opacity: 0)
-      @sprite = Graphics::Enemy.new(collision_opacity: collision_opacity)
+    def initialize(**args)
+      @sprite = Graphics::Enemy.new(**args)
       @sprite.play
       @health_points = @max_health_points = 3
     end

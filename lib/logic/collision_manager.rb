@@ -18,7 +18,7 @@ class Logic::CollisionManager
   end
 
   def ysort?(characters)
-    characters.each_with_index do |character, _index|
+    characters.each do |character|
       next unless character.health_points > 0
 
       character.sprite.z = if check_overlap @ysorts, character.sprite.collision
@@ -51,7 +51,7 @@ class Logic::CollisionManager
 
   def check_hit_box_overlap(player)
     player.atack_finished = false
-    @enemies.each_with_index do |enemy, index|
+    @enemies.each do |enemy|
       player_hit_box = player.sprite.hit_box
       enemy_hurt_box = enemy.sprite.hurt_box
       has_overlap = horizontal_overlap(player_hit_box, enemy_hurt_box) && vertical_overlap(player_hit_box, enemy_hurt_box)
@@ -60,8 +60,8 @@ class Logic::CollisionManager
       enemy.health_points -= player.damage
 
       enemy.knocback player.direction if enemy.health_points > 0
-      @enemies = @enemies.pop index if enemy.health_points.zero?
     end
+    @enemies = @enemies.filter { |enemy| enemy.health_points > 0 }
   end
 
   def check_for_detections(enemies, player)
@@ -82,13 +82,15 @@ class Logic::CollisionManager
   end
 
   def check_overlap_and_destroy(objects, hit_box)
-    objects.each_with_index do |object, index|
+    objects.each do |object|
       has_overlap = horizontal_overlap(hit_box, object.collision) && vertical_overlap(hit_box, object.collision)
       next unless has_overlap
 
+      object.ready_to_destroy = true
       object.destroy
-      @destructibles = @destructibles.pop index
     end
+
+    @destructibles = @destructibles.filter { |object| object.ready_to_destroy == false }
   end
 
   def horizontal_overlap(player, object)
