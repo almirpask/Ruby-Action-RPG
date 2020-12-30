@@ -9,7 +9,6 @@ class Logic::CollisionManager
   end
 
   def attack_collision?(player)
-    puts "#{player.state} =>  #{player.atack_finished}"
     check_hit_box_overlap(player) if player.state == :atack && player.atack_finished
   end
 
@@ -18,8 +17,16 @@ class Logic::CollisionManager
     check_overlap [*@collisions, *objects], player
   end
 
-  def ysort?(player)
-    check_overlap @ysorts, player
+  def ysort?(characters)
+    characters.each_with_index do |character, _index|
+      next unless character.health_points > 0
+
+      character.sprite.z = if check_overlap @ysorts, character.sprite.collision
+                             4
+                           else
+                             40
+                           end
+    end
   end
 
   def destructible?(player)
@@ -52,6 +59,7 @@ class Logic::CollisionManager
 
       enemy.health_points -= player.damage
 
+      enemy.knocback player.direction if enemy.health_points > 0
       @enemies = @enemies.pop index if enemy.health_points.zero?
     end
   end

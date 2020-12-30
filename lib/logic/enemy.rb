@@ -13,13 +13,26 @@ class Logic
     end
 
     def health_points=(damage)
-      puts 'health_points'
       @health_points = damage
       @sprite.remove if @health_points <= 0
     end
 
     def move_to_player_position(player)
       chase_target player.collision
+    end
+
+    def knocback(direction)
+      force = 30
+      case direction
+      when 'up'
+        @sprite.y -= force
+      when 'down'
+        @sprite.y += force
+      when 'right'
+        @sprite.x += force
+      when 'left'
+        @sprite.x -= force
+      end
     end
 
     private

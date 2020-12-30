@@ -2,12 +2,13 @@ require 'ruby2d'
 require_relative 'lib/graphics/background'
 require_relative 'lib/graphics/tree'
 require_relative 'lib/graphics/grass'
+require_relative 'lib/graphics/Hearth'
 require_relative 'lib/logic/player'
 require_relative 'lib/logic/enemy'
 require_relative 'lib/logic/collision_manager'
 
 set title: 'Action RPG', fullscreen: false, resizable: false, width: 1280, height: 720, viewport_width: 320, viewport_height: 180, background: 'white'
-SHOW_COLLISIONS = 0 # 1 TRUE, 0 FALSE
+SHOW_COLLISIONS = 1 # 1 TRUE, 0 FALSE
 collision_opacity = 0
 
 case SHOW_COLLISIONS
@@ -23,13 +24,20 @@ collision_manager.add_object Graphics::Tree.new(x: 110, y: 50, collision_opacity
 collision_manager.add_object Graphics::Tree.new(x: 210, y: 50, collision_opacity: collision_opacity)
 collision_manager.add_object Graphics::Tree.new(x: 150, y: 90, collision_opacity: collision_opacity)
 collision_manager.add_object Graphics::Grass.new(x: 0, y: 0, collision_opacity: collision_opacity)
-collision_manager.add_enemy Logic::Enemy.new(collision_opacity: collision_opacity)
+
+enemies = []
+enemies << Logic::Enemy.new(collision_opacity: collision_opacity)
+enemies.each do |enemy|
+  collision_manager.add_enemy enemy
+end
+
 Graphics::Background.new(get(:window))
 @player = Logic::Player.new(collision_opacity: collision_opacity)
 
 on :key_up do |event|
   key = event.key
   @player.reset_position key
+  close if key == 'esc'
 end
 
 on :key_down do |event|
@@ -48,13 +56,8 @@ update do
   collision = collision_manager.collision? @player.sprite.collision
   collision_manager.destructible? @player
   @player.is_colliding = collision
-  ysort = collision_manager.ysort? @player.sprite.collision
+  collision_manager.ysort? [@player, *enemies]
   collision_manager.player_detection_zone? @player
   collision_manager.attack_collision? @player
-  @player.sprite.z = if ysort
-                       4
-                     else
-                       20
-                     end
 end
 show

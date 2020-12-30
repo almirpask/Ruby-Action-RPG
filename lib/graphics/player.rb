@@ -7,19 +7,19 @@ class Graphics
     HIT_BOX_POSITIONS = {
       right: {
         x: 38, y: 24,
-        width: 10, height: 20
+        width: 20, height: 20
       },
       left: {
-        x: 16, y: 24,
-        width: 10, height: 20
+        x: 6, y: 24,
+        width: 20, height: 20
       },
       down: {
         x: 22, y: 44,
-        width: 20, height: 10
+        width: 20, height: 20
       },
       up: {
         x: 22, y: 14,
-        width: 20, height: 10
+        width: 20, height: 20
       }
     }.freeze
 
@@ -28,6 +28,7 @@ class Graphics
         width: 64,
         height: 64
       }
+
       super(
         'assets/images/Player.png',
         clip_width: dimensions[:width],
@@ -157,7 +158,7 @@ class Graphics
       @collision = Rectangle.new(
         x: x + 26, y: y + 40,
         width: 10, height: 5,
-        color: 'teal',
+        color: 'black',
         opacity: @collision_opacity,
         z: 20
       )

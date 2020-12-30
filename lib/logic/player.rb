@@ -4,7 +4,7 @@ require_relative '../graphics/player.rb'
 class Logic
   class Player
     attr_accessor :state, :position, :flip, :player, :direction, :current_state, :last_position, :is_colliding, :atack_finished
-    attr_reader :damage
+    attr_reader :damage, :health_points, :max_health_points
     def initialize(collision_opacity: 0)
       @player = Graphics::Player.new(collision_opacity: collision_opacity)
       @state = :move
@@ -18,6 +18,10 @@ class Logic
       @is_colliding = false
       @damage = 1.0
       @atack_finished = true
+      @max_health_points = 3
+      @health_points = @max_health_points * 2
+
+      Graphics::Hearth.new(max_health_points: max_health_points, health_points: @health_points)
     end
 
     def move(key)
