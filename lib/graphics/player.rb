@@ -3,7 +3,7 @@ require 'ruby2d'
 class Graphics
   class Player < Sprite
     attr_reader :collision, :collision_opacity
-    attr_accessor :hit_box, :direction
+    attr_accessor :hit_box, :hurt_box, :direction
     HIT_BOX_POSITIONS = {
       right: {
         x: 38, y: 24,
@@ -136,7 +136,7 @@ class Graphics
       )
       @collision_opacity, = collision_opacity
       @direction = 'right'
-      set_colision
+      set_collisionn
     end
 
     def x=(number)
@@ -153,8 +153,7 @@ class Graphics
 
     private
 
-    def set_colision
-      puts "ENV DEV #{ENV['DEV']}"
+    def set_collisionn
       @collision = Rectangle.new(
         x: x + 26, y: y + 40,
         width: 10, height: 5,
@@ -170,11 +169,18 @@ class Graphics
         opacity: @collision_opacity,
         z: 20
       )
+      @hurt_box = Rectangle.new(
+        x: x + 26, y: y + 40,
+        width: 10, height: 5,
+        color: 'orange',
+        opacity: @collision_opacity,
+        z: 20
+      )
     end
 
     def move_collision
-      @collision.x = x + 26
-      @collision.y = y + 40
+      @hurt_box.x = @collision.x = x + 26
+      @hurt_box.y = @collision.y = y + 40
 
       set_hit_box_direction @direction.to_sym
     end

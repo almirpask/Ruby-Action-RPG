@@ -8,6 +8,11 @@ class Logic::CollisionManager
     @enemies = []
   end
 
+  def attack_collision?(player)
+    puts "#{player.state} =>  #{player.atack_finished}"
+    check_hit_box_overlap(player) if player.state == :atack && player.atack_finished
+  end
+
   def collision?(player)
     objects = destructibles.map(&:collision)
     check_overlap [*@collisions, *objects], player
@@ -36,6 +41,20 @@ class Logic::CollisionManager
   end
 
   private
+
+  def check_hit_box_overlap(player)
+    player.atack_finished = false
+    @enemies.each_with_index do |enemy, index|
+      player_hit_box = player.sprite.hit_box
+      enemy_hurt_box = enemy.sprite.hurt_box
+      has_overlap = horizontal_overlap(player_hit_box, enemy_hurt_box) && vertical_overlap(player_hit_box, enemy_hurt_box)
+      next unless has_overlap
+
+      enemy.health_points -= player.damage
+
+      @enemies = @enemies.pop index if enemy.health_points.zero?
+    end
+  end
 
   def check_for_detections(enemies, player)
     enemies.each do |enemy|

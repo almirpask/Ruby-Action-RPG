@@ -2,8 +2,9 @@ require 'ruby2d'
 
 class Graphics
   class Enemy < Sprite
-    attr_accessor :hit_box, :direction, :shadow, :player_zone_detection, :collision
+    attr_accessor :hit_box, :direction, :shadow, :player_zone_detection, :collision, :hurt_box
     attr_reader :collision_opacity
+
     def initialize(collision_opacity: 0)
       dimensions = {
         width: 16,
@@ -26,10 +27,12 @@ class Graphics
         width: 10,
         height: 8,
         x: x + 4,
-        y: y + 18
+        y: y + 18,
+        z: z
       )
+
       @direction = 'right'
-      set_colision
+      set_collision
     end
 
     def x=(number)
@@ -44,9 +47,19 @@ class Graphics
       move_collision
     end
 
+    def remove
+      super
+
+      @player_zone_detection.remove
+      @collision.remove
+      @hit_box.remove
+      @hurt_box.remove
+      @shadow.remove
+    end
+
     private
 
-    def set_colision
+    def set_collision
       @player_zone_detection = Rectangle.new(
         x: x + -22, y: y + -8,
         width: 60, height: 60,
@@ -70,6 +83,13 @@ class Graphics
         opacity: @collision_opacity,
         z: 20
       )
+      @hurt_box = Rectangle.new(
+        x: x + 4, y: y + 19,
+        width: 10, height: 6,
+        color: 'teal',
+        opacity: @collision_opacity,
+        z: 20
+      )
     end
 
     def move_collision
@@ -81,6 +101,13 @@ class Graphics
 
       @hit_box.x = x + 4
       @hit_box.y = y + 19
+
+      @hurt_box.x = x + 4
+      @hurt_box.y = y + 19
+
+      @shadow.x = x + 4
+      @shadow.y = y + 18
+      @shadow.z = z
     end
   end
 end

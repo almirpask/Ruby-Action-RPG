@@ -3,7 +3,8 @@ require_relative '../graphics/player.rb'
 
 class Logic
   class Player
-    attr_accessor :state, :position, :flip, :player, :direction, :current_state, :last_position, :is_colliding
+    attr_accessor :state, :position, :flip, :player, :direction, :current_state, :last_position, :is_colliding, :atack_finished
+    attr_reader :damage
     def initialize(collision_opacity: 0)
       @player = Graphics::Player.new(collision_opacity: collision_opacity)
       @state = :move
@@ -15,6 +16,8 @@ class Logic
       @player.direction = @direction
       @player.play(animation: "idle_#{@direction}".to_sym, loop: true)
       @is_colliding = false
+      @damage = 1.0
+      @atack_finished = true
     end
 
     def move(key)
@@ -72,7 +75,6 @@ class Logic
       @position = normalize(@position)
 
       set_direction
-      set_hitbox_direction
       if is_colliding
         push = 3
         case @direction
@@ -99,8 +101,10 @@ class Logic
 
     def atack_state
       @current_state = @state
+
       @player.play(animation: "atack_#{direction}".to_sym) do
         @state = :idle
+        @atack_finished = true
       end
     end
 
@@ -140,13 +144,6 @@ class Logic
         @direction = 'down'
       end
       @player.direction = @direction
-    end
-
-    def set_hitbox_direction
-      # case @direction
-      # when 'right'
-      #   self.sprite.hit_box = {HIT_BOX_POSITIONS}
-      # end
     end
   end
 end

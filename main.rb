@@ -7,7 +7,7 @@ require_relative 'lib/logic/enemy'
 require_relative 'lib/logic/collision_manager'
 
 set title: 'Action RPG', fullscreen: false, resizable: false, width: 1280, height: 720, viewport_width: 320, viewport_height: 180, background: 'white'
-SHOW_COLLISIONS = 1 # 1 TRUE, 0 FALSE
+SHOW_COLLISIONS = 0 # 1 TRUE, 0 FALSE
 collision_opacity = 0
 
 case SHOW_COLLISIONS
@@ -50,6 +50,7 @@ update do
   @player.is_colliding = collision
   ysort = collision_manager.ysort? @player.sprite.collision
   collision_manager.player_detection_zone? @player
+  collision_manager.attack_collision? @player
   @player.sprite.z = if ysort
                        4
                      else
