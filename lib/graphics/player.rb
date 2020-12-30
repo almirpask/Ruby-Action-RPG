@@ -3,7 +3,7 @@ require 'ruby2d'
 class Graphics
   class Player < Sprite
     attr_reader :collision, :collision_opacity
-    attr_accessor :hit_box, :hurt_box, :direction
+    attr_accessor :hit_box, :hurt_box, :direction, :shadow
     HIT_BOX_POSITIONS = {
       right: {
         x: 38, y: 24,
@@ -137,6 +137,13 @@ class Graphics
       )
       @collision_opacity, = collision_opacity
       @direction = 'right'
+      @shadow = Sprite.new(
+        'assets/images/MediumShadow.png',
+        width: 15,
+        height: 12,
+        z: z - 1,
+        opacity: 1
+      )
       set_collisionn
     end
 
@@ -183,6 +190,9 @@ class Graphics
       @hurt_box.x = @collision.x = x + 26
       @hurt_box.y = @collision.y = y + 40
 
+      @shadow.x = x + 24
+      @shadow.y = y + 36
+      @shadow.z = z
       set_hit_box_direction @direction.to_sym
     end
 

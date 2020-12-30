@@ -3,7 +3,6 @@ require 'ruby2d'
 class Graphics::Grass < Sprite
   attr_accessor :collision, :destructible
   attr_writer :position, :collision_opacity
-
   def initialize(x:, y:, collision_opacity: 0)
     dimensions = {
       width: 32,
@@ -28,6 +27,7 @@ class Graphics::Grass < Sprite
     )
     @position = { **dimensions, x: x, y: y, clip_width: dimensions[:width] }
     @destructible = true
+    @ready_to_destroy = false
   end
 
   def destroy

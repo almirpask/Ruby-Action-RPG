@@ -32,6 +32,16 @@ class Graphics
         opacity: @collision_opacity,
         z: 20
       )
+
+      @shadow = Sprite.new(
+        'assets/images/LargeShadow.png',
+        width: 32,
+        height: 14,
+        x: x + 0.5,
+        y: (y + 40),
+        z: z,
+        opacity: 1
+      )
     end
   end
 end
