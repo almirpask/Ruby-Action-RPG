@@ -23,6 +23,7 @@ class Graphics
     end
 
     def health_points=(health_points)
+      @health_points.remove if health_points == 0
       @health_points.clip_width = health_points * 7.5
     end
   end
