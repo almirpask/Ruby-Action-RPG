@@ -54,11 +54,13 @@ class Graphics
       case effect
       when :death
         @death_effect.opacity = 1
+        @death_effect_sound.play
         @death_effect.play do
           @death_effect.opacity = 0
         end
       when :hit
         @hit_effect.opacity = 1
+        @hit_effect_sound.play
         @hit_effect.play do
           @hit_effect.opacity = 0
         end
@@ -124,8 +126,10 @@ class Graphics
     end
 
     def move_effects
-      @hit_effect.x = @death_effect.x = x
-      @hit_effect.y = @death_effect.y = y
+      @hit_effect.x = x - 5
+      @hit_effect.y = y - 5
+      @death_effect.x = x - 8
+      @death_effect.y = y - 8
       @shadow.x = x + 4
       @shadow.y = y + 18
       @shadow.z = z
@@ -148,11 +152,13 @@ class Graphics
         width: 24,
         height: 24,
         time: 110,
-        x: x,
-        y: y,
+        x: x - 5,
+        y: y - 5,
         z: z + 1,
         opacity: 0
       )
+
+      @hit_effect_sound = Sound.new('assets/sounds/Hit.wav')
 
       @death_effect = Sprite.new(
         'assets/images/EnemyDeathEffect.png',
@@ -160,11 +166,13 @@ class Graphics
         width: 32,
         height: 32,
         time: 110,
-        x: x,
-        y: y,
+        x: x - 8,
+        y: y - 8,
         z: z,
         opacity: 0
       )
+
+      @death_effect_sound = Sound.new('assets/sounds/EnemyDie.wav')
     end
   end
 end

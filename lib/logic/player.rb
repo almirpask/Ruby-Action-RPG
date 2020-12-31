@@ -71,6 +71,7 @@ class Logic
     def health_points=(damage)
       if Time.now - @invencibility_timer >= 1
         @invencibility_timer = Time.now
+        @player.play_sound :hurt
         @health_points = damage
         @heath_ui.health_points = @health_points
         @player.remove if @health_points <= 0
@@ -112,12 +113,13 @@ class Logic
     end
 
     def roll_state
+      @player.play_sound :evade
       @current_state = @state
     end
 
     def atack_state
       @current_state = @state
-
+      @player.play_sound :atack if @atack_finished
       @player.play(animation: "atack_#{direction}".to_sym) do
         @state = :idle
         @atack_finished = true

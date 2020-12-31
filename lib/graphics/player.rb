@@ -137,14 +137,9 @@ class Graphics
       )
       @collision_opacity, = collision_opacity
       @direction = 'right'
-      @shadow = Sprite.new(
-        'assets/images/MediumShadow.png',
-        width: 15,
-        height: 12,
-        z: z - 1,
-        opacity: 1
-      )
-      set_collisionn
+
+      set_collision
+      set_effect
     end
 
     def x=(number)
@@ -167,9 +162,34 @@ class Graphics
       @collision.remove
     end
 
+    def play_sound(sound)
+      case sound
+      when :evade
+        @evade_sound.play
+      when :hurt
+        @hurt_sound.play
+      when :atack
+        @atack_sound.play
+      end
+    end
+
     private
 
-    def set_collisionn
+    def set_effect
+      @shadow = Sprite.new(
+        'assets/images/MediumShadow.png',
+        width: 15,
+        height: 12,
+        z: z - 1,
+        opacity: 1
+      )
+
+      @hurt_sound = Sound.new('assets/sounds/Hurt.wav')
+      @atack_sound = Sound.new('assets/sounds/Swipe.wav')
+      @evade_sound = Sound.new('assets/sounds/Evade.wav')
+    end
+
+    def set_collision
       @collision = Rectangle.new(
         x: x + 26, y: y + 40,
         width: 10, height: 5,
