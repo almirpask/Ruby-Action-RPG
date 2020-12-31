@@ -45,7 +45,7 @@ collision_manager.add_object Logic::Grass.new(x: 265, y: 160, collision_opacity:
 enemies = []
 enemies << Logic::Enemy.new(collision_opacity: collision_opacity, x: 100, y: 100)
 enemies << Logic::Enemy.new(collision_opacity: collision_opacity, x: 200, y: 130)
-enemies << Logic::Enemy.new(collision_opacity: collision_opacity, x: 34, y: 70)
+enemies << Logic::Enemy.new(collision_opacity: collision_opacity, x: 34, y: 90)
 enemies.each do |enemy|
   collision_manager.add_enemy enemy
 end
