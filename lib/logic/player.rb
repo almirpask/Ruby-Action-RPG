@@ -22,11 +22,11 @@ class Logic
       @health_points = @max_health_points * 2
       @invencibility_timer = Time.now
       @heath_ui = Graphics::Hearth.new(max_health_points: max_health_points, health_points: @health_points)
+      @is_rolling
     end
 
     def move(key)
       if %i[idle move].include? @state
-        @current_state = :move
         @position[:x] = action_pressed?(key, 'right') - action_pressed?(key, 'left') if @position[:x].zero?
         @position[:y] = action_pressed?(key, 'down') - action_pressed?(key, 'up') if @position[:y].zero?
 
@@ -59,8 +59,8 @@ class Logic
         idle_state
       when :move
         move_state
-      when :roll
-        roll_state
+      when :evade
+        evade_state
       when :atack
         atack_state
       when :dead
@@ -112,9 +112,26 @@ class Logic
       @current_state = :move
     end
 
-    def roll_state
-      @player.play_sound :evade
-      @current_state = @state
+    def evade_state
+      push = 2
+      case @direction
+      when 'up'
+        @player.y -= push
+      when 'down'
+        @player.y += push
+      when 'left'
+        @player.x -= push
+      when 'right'
+        @player.x += push
+      end
+
+      @player.play_sound(:evade) unless @is_rolling
+      @is_rolling = true
+      @player.play(animation: "roll_#{@direction}".to_sym) do
+        @state = :move
+        @current_state = :evade
+        @is_rolling = false
+      end
     end
 
     def atack_state

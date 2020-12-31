@@ -39,7 +39,7 @@ end
 on :key_down do |event|
   key = event.key
   @player.atack key
-  @player.move key
+  @player.state = :evade if key == 'x'
 end
 
 on :key do |event|
