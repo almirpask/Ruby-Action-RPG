@@ -2,7 +2,6 @@ require 'ruby2d'
 
 class Graphics::Grass < Sprite
   attr_accessor :collision, :destructible
-  attr_writer :position, :collision_opacity
   def initialize(x:, y:, collision_opacity: 0)
     dimensions = {
       width: 32,
@@ -16,13 +15,13 @@ class Graphics::Grass < Sprite
       opacity: 1,
       **dimensions
     )
-    @collision_opacity, = collision_opacity
+
     @collision = Rectangle.new(
       x: x + 8, y: y + 8,
       width: 16,
       height: 16,
       color: 'teal',
-      opacity: 1,
+      opacity: collision_opacity,
       z: 20
     )
     @position = { **dimensions, x: x, y: y, clip_width: dimensions[:width] }
