@@ -22,23 +22,22 @@ class Graphics
         loop: true
       )
 
-      
-
       @collision_opacity = collision_opacity
 
       set_collision
+      set_effects
     end
 
     def x=(number)
       super
       @x = number
-      move_collision
+      move
     end
 
     def y=(number)
       super
       @y = number
-      move_collision
+      move
     end
 
     def remove
@@ -51,7 +50,27 @@ class Graphics
       @shadow.opacity = 0
     end
 
+    def play_effect(effect)
+      case effect
+      when :death
+        @death_effect.opacity = 1
+        @death_effect.play do
+          @death_effect.opacity = 0
+        end
+      when :hit
+        @hit_effect.opacity = 1
+        @hit_effect.play do
+          @hit_effect.opacity = 0
+        end
+      end
+    end
+
     private
+
+    def move
+      move_effects
+      move_collision
+    end
 
     def set_collision
       @player_zone_detection = Rectangle.new(
@@ -84,16 +103,6 @@ class Graphics
         opacity: @collision_opacity,
         z: z
       )
-
-      @shadow = Sprite.new(
-        'assets/images/SmallShadow.png',
-        width: 10,
-        height: 8,
-        x: x + 4,
-        y: y + 18,
-        z: z,
-        opacity: opacity
-      )
     end
 
     def move_collision
@@ -112,10 +121,50 @@ class Graphics
       @hurt_box.x = x + 4
       @hurt_box.y = y + 19
       @hurt_box.z = z
+    end
 
+    def move_effects
+      @hit_effect.x = @death_effect.x = x
+      @hit_effect.y = @death_effect.y = y
       @shadow.x = x + 4
       @shadow.y = y + 18
       @shadow.z = z
+    end
+
+    def set_effects
+      @shadow = Sprite.new(
+        'assets/images/SmallShadow.png',
+        width: 10,
+        height: 8,
+        x: x + 4,
+        y: y + 18,
+        z: z,
+        opacity: opacity
+      )
+
+      @hit_effect = Sprite.new(
+        'assets/images/HitEffect.png',
+        clip_width: 24,
+        width: 24,
+        height: 24,
+        time: 110,
+        x: x,
+        y: y,
+        z: z + 1,
+        opacity: 0
+      )
+
+      @death_effect = Sprite.new(
+        'assets/images/EnemyDeathEffect.png',
+        clip_width: 32,
+        width: 32,
+        height: 32,
+        time: 110,
+        x: x,
+        y: y,
+        z: z,
+        opacity: 0
+      )
     end
   end
 end

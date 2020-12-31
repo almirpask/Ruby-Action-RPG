@@ -14,7 +14,12 @@ class Logic
 
     def health_points=(damage)
       @health_points = damage
-      @sprite.remove if @health_points <= 0
+      if @health_points <= 0
+        @sprite.remove
+        @sprite.play_effect(:death)
+      else
+        @sprite.play_effect(:hit)
+      end
     end
 
     def move_to_player_position(player)
