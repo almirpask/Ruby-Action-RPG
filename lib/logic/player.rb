@@ -3,36 +3,33 @@ require_relative '../graphics/player.rb'
 
 class Logic
   class Player
-    attr_accessor :state, :position, :flip, :player, :direction, :current_state, :last_position, :is_colliding, :atack_finished
-    attr_reader :damage, :health_points, :max_health_points, :invencibility_timer
+    attr_accessor :state, :direction, :atack_finished
+    attr_writer :is_colliding
+    attr_reader :damage, :health_points, :sprite
     def initialize(collision_opacity: 0)
-      @player = Graphics::Player.new(collision_opacity: collision_opacity)
+      @sprite = Graphics::Player.new(collision_opacity: collision_opacity)
       @state = :move
       @current_state = @state
-      @flip = nil
-      @position = { x: 0, y: 0 }
-      @last_position = @position
+      @velocity = { x: 0, y: 0 }
       @direction = 'down'
-      @player.direction = @direction
-      @player.play(animation: "idle_#{@direction}".to_sym, loop: true)
       @is_colliding = false
       @damage = 1.0
       @atack_finished = true
       @max_health_points = 3
       @health_points = @max_health_points * 2
       @invencibility_timer = Time.now
-      @heath_ui = Graphics::Hearth.new(max_health_points: max_health_points, health_points: @health_points)
+      @heath_ui = Graphics::Hearth.new(max_health_points: @max_health_points, health_points: @health_points)
       @is_rolling = false
+
+      @sprite.direction = @direction
+      @sprite.play(animation: "idle_#{@direction}".to_sym, loop: true)
     end
 
     def move(key)
       if %i[idle move].include? @state
-        @position[:x] = action_pressed?(key, 'right') - action_pressed?(key, 'left') if @position[:x].zero?
-        @position[:y] = action_pressed?(key, 'down') - action_pressed?(key, 'up') if @position[:y].zero?
-
-        @flip = :horizontal if @position[:x] < 0
-        @flip = nil if @position[:x] > 0
-        @state = :move if @position[:x] != 0 || @position[:y] != 0
+        @velocity[:x] = action_pressed?(key, 'right') - action_pressed?(key, 'left') if @velocity[:x].zero?
+        @velocity[:y] = action_pressed?(key, 'down') - action_pressed?(key, 'up') if @velocity[:y].zero?
+        @state = :move if @velocity[:x] != 0 || @velocity[:y] != 0
       end
     end
 
@@ -43,14 +40,10 @@ class Logic
 
     def reset_position(key)
       if %w[left right].include?(key)
-        position[:x] = 0
+        @velocity[:x] = 0
       elsif %w[up down].include?(key)
-        position[:y] = 0
+        @velocity[:y] = 0
       end
-    end
-
-    def sprite
-      @player
     end
 
     def state_machine
@@ -69,12 +62,12 @@ class Logic
     end
 
     def health_points=(damage)
-      if Time.now - @invencibility_timer >= 1
+      if Time.now - @invencibility_timer >= 1 && !@is_rolling
         @invencibility_timer = Time.now
-        @player.play_sound :hurt
+        @sprite.play_sound :hurt
         @health_points = damage
         @heath_ui.health_points = @health_points
-        @player.remove if @health_points <= 0
+        @sprite.remove if @health_points <= 0
         @state = :dead if @health_points <= 0
       end
     end
@@ -84,29 +77,29 @@ class Logic
     def idle_state
       return unless @current_state != @state
 
-      @player.play(animation: "idle_#{@direction}".to_sym, loop: true)
+      @sprite.play(animation: "idle_#{@direction}".to_sym, loop: true)
       @current_state = @state
     end
 
     def move_state
-      @position = normalize(@position)
+      @velocity = normalize(@velocity)
 
       set_direction
-      if is_colliding
+      if @is_colliding
         push = 3
         case @direction
         when 'up'
-          @player.y += push
+          @sprite.y += push
         when 'down'
-          @player.y -= push
+          @sprite.y -= push
         when 'left'
-          @player.x += push
+          @sprite.x += push
         when 'right'
-          @player.x -= push
+          @sprite.x -= push
         end
       else
-        @player.x += @position[:x]
-        @player.y += @position[:y]
+        @sprite.x += @velocity[:x]
+        @sprite.y += @velocity[:y]
       end
       @state = :idle
       @current_state = :move
@@ -116,18 +109,18 @@ class Logic
       push = 2
       case @direction
       when 'up'
-        @player.y -= push
+        @sprite.y -= push
       when 'down'
-        @player.y += push
+        @sprite.y += push
       when 'left'
-        @player.x -= push
+        @sprite.x -= push
       when 'right'
-        @player.x += push
+        @sprite.x += push
       end
 
-      @player.play_sound(:evade) unless @is_rolling
+      @sprite.play_sound(:evade) unless @is_rolling
       @is_rolling = true
-      @player.play(animation: "roll_#{@direction}".to_sym) do
+      @sprite.play(animation: "roll_#{@direction}".to_sym) do
         @state = :move
         @current_state = :evade
         @is_rolling = false
@@ -136,8 +129,8 @@ class Logic
 
     def atack_state
       @current_state = @state
-      @player.play_sound :atack if @atack_finished
-      @player.play(animation: "atack_#{direction}".to_sym) do
+      @sprite.play_sound :atack if @atack_finished
+      @sprite.play(animation: "atack_#{direction}".to_sym) do
         @state = :idle
         @atack_finished = true
       end
@@ -163,24 +156,24 @@ class Logic
     end
 
     def set_direction
-      if @position[:y].zero?
-        if @position[:x] < 0
-          @player.play(animation: :move_left, loop: true)
+      if @velocity[:y].zero?
+        if @velocity[:x] < 0
+          @sprite.play(animation: :move_left, loop: true)
           @direction = 'left'
-        elsif @position[:x] > 0
-          @player.play(animation: :move_right, loop: true)
+        elsif @velocity[:x] > 0
+          @sprite.play(animation: :move_right, loop: true)
           @direction = 'right'
         end
       end
 
-      if @position[:y] < 0
-        @player.play(animation: :move_up, loop: true)
+      if @velocity[:y] < 0
+        @sprite.play(animation: :move_up, loop: true)
         @direction = 'up'
-      elsif @position[:y] > 0
-        @player.play(animation: :move_down, loop: true)
+      elsif @velocity[:y] > 0
+        @sprite.play(animation: :move_down, loop: true)
         @direction = 'down'
       end
-      @player.direction = @direction
+      @sprite.direction = @direction
     end
   end
 end

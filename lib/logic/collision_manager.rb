@@ -1,6 +1,4 @@
 class Logic::CollisionManager
-  attr_reader :collisions, :ysorts, :destructibles, :enemies
-
   def initialize
     @collisions = []
     @ysorts = []
@@ -14,7 +12,7 @@ class Logic::CollisionManager
   end
 
   def collision?(player)
-    objects = destructibles.map(&:collision)
+    objects = @destructibles.map(&:collision)
     check_overlap [*@collisions, *objects], player
   end
 

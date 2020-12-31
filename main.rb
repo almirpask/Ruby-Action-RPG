@@ -8,7 +8,7 @@ require_relative 'lib/logic/collision_manager'
 require_relative 'lib/logic/grass'
 
 set title: 'Action RPG', fullscreen: false, resizable: false, width: 1280, height: 720, viewport_width: 320, viewport_height: 180, background: 'white'
-SHOW_COLLISIONS = 1 # 1 TRUE, 0 FALSE
+SHOW_COLLISIONS = 0 # 1 TRUE, 0 FALSE
 collision_opacity = 0
 collision_opacity = 0.5 if SHOW_COLLISIONS == 1
 
