@@ -159,6 +159,14 @@ class Graphics
       move_collision
     end
 
+    def remove
+      super
+      @hurt_box.remove
+      @shadow.remove
+      @hit_box.remove
+      @collision.remove
+    end
+
     private
 
     def set_collisionn

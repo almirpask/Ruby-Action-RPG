@@ -4,7 +4,7 @@ require_relative '../graphics/player.rb'
 class Logic
   class Player
     attr_accessor :state, :position, :flip, :player, :direction, :current_state, :last_position, :is_colliding, :atack_finished
-    attr_reader :damage, :health_points, :max_health_points
+    attr_reader :damage, :health_points, :max_health_points, :invencibility_timer
     def initialize(collision_opacity: 0)
       @player = Graphics::Player.new(collision_opacity: collision_opacity)
       @state = :move
@@ -20,8 +20,8 @@ class Logic
       @atack_finished = true
       @max_health_points = 3
       @health_points = @max_health_points * 2
-
-      Graphics::Hearth.new(max_health_points: max_health_points, health_points: @health_points)
+      @invencibility_timer = Time.now
+      @heath_ui = Graphics::Hearth.new(max_health_points: max_health_points, health_points: @health_points)
     end
 
     def move(key)
@@ -63,6 +63,18 @@ class Logic
         roll_state
       when :atack
         atack_state
+      when :dead
+        dead_state
+      end
+    end
+
+    def health_points=(damage)
+      if Time.now - @invencibility_timer >= 1
+        @invencibility_timer = Time.now
+        @health_points = damage
+        @heath_ui.health_points = @health_points
+        @player.remove if @health_points <= 0
+        @state = :dead if @health_points <= 0
       end
     end
 
@@ -111,6 +123,8 @@ class Logic
         @atack_finished = true
       end
     end
+
+    def dead_state; end
 
     def action_pressed?(key, action)
       key == action ? 1 : 0
