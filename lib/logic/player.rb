@@ -22,7 +22,7 @@ class Logic
       @health_points = @max_health_points * 2
       @invencibility_timer = Time.now
       @heath_ui = Graphics::Hearth.new(max_health_points: max_health_points, health_points: @health_points)
-      @is_rolling
+      @is_rolling = false
     end
 
     def move(key)
