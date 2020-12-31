@@ -18,11 +18,11 @@ class Graphics::Grass < Sprite
     )
     @collision_opacity, = collision_opacity
     @collision = Rectangle.new(
-      x: x + 8, y: 8,
+      x: x + 8, y: y + 8,
       width: 16,
       height: 16,
       color: 'teal',
-      opacity: @collision_opacity,
+      opacity: 1,
       z: 20
     )
     @position = { **dimensions, x: x, y: y, clip_width: dimensions[:width] }
