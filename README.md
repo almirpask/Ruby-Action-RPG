@@ -38,6 +38,6 @@ Run the command: `ruby main.rb`
 
 Player control:
 
-- Move: Arrows(Up, down, left, righ)
+- Move: Arrows(up, down, left, right)
 - Atack: z
 - Roll/Evade: x
